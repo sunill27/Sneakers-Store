@@ -87,7 +87,9 @@ class OrderController {
       });
     }
 
-    if (paymentDetails.paymentMethod === PaymentMethod.KHALTI) {
+    if (
+      paymentDetails.paymentMethod.toLocaleLowerCase() === PaymentMethod.KHALTI
+    ) {
       //Khalti Integration:
       const data = {
         return_url: "http://localhost:5173/success/",
@@ -102,26 +104,26 @@ class OrderController {
           data,
           {
             headers: {
-              Authorization: "key 86b4b8f79c31490bbb517591d14038a6",
+              Authorization: "key " + process.env.KHALTI_KEY,
             },
           }
         );
-        console.log(response);
+        // console.log(response);
         const khaltiResponse: KhaltiResponse = response.data;
         paymentData.pidx = khaltiResponse.pidx;
         paymentData.save();
         res.status(200).json({
           message: "Order placed successfully",
-          data: responseOrderData,
           url: khaltiResponse.payment_url,
+          data: responseOrderData,
         });
-    } catch (error: any) {
-      console.error("Khalti API error: ", error.response.data);
-      res.status(500).json({
-        message: "Internal error",
-        errorMessage: error.response?.data || error.message,
-      });
-    }
+      } catch (error: any) {
+        console.error("Khalti API error: ", error.response.data);
+        res.status(500).json({
+          message: "Internal error",
+          errorMessage: error.response?.data || error.message,
+        });
+      }
     } else {
       res.status(200).json({
         message: "Order placed successfully",

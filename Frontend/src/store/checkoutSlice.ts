@@ -77,7 +77,7 @@ export function orderItem(data: OrderData) {
       if (response.status === 200) {
         dispatch(setStatus(Status.SUCCESS));
         dispatch(setItems(response.data.data));
-        if (response.data.url == 200) {
+        if (response.data.url) {
           dispatch(setKhaltiUrl(response.data.url));
         } else {
           dispatch(setKhaltiUrl(null));
@@ -118,6 +118,23 @@ export function fetchMyOrderDetails(id: string) {
       if (response.status === 200) {
         dispatch(setStatus(Status.SUCCESS));
         dispatch(setMyOrderDetails(response.data.data));
+      } else {
+        dispatch(setStatus(Status.ERROR));
+      }
+    } catch (error) {
+      dispatch(setStatus(Status.ERROR));
+    }
+  };
+}
+
+//Cancel Order:
+export function cancelMyOrder(id: string) {
+  return async function cancelMyOrderThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIAuthenticated.patch("/order/customer/" + id);
+      if (response.status === 200) {
+        dispatch(setStatus(Status.SUCCESS));
       } else {
         dispatch(setStatus(Status.ERROR));
       }

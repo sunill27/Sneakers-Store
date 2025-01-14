@@ -17,11 +17,9 @@ const Hero = () => {
               </h1>
               {/* <span className="w-20 h-2 bg-gray-800 dark:bg-white mt-5"></span> */}
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-white mt-4">
-                Discover a world of high-quality products tailored to your
-                needs. Whether it’s fashion, electronics, or home essentials,
-                we’ve got it all in one place. Experience seamless shopping with
-                fast delivery, secure payments, and exceptional customer
-                service.
+                Discover a world of high-quality shoes tailored to your needs.
+                Experience seamless shopping with fast delivery, secure
+                payments, and exceptional customer service.
               </p>
               <div className="flex flex-col sm:flex-row mt-8">
                 <Link

@@ -278,6 +278,24 @@ class OrderController {
   }
 
   //ADMIN SIDE:
+  async fetchOrders(req: AuthRequest, res: Response): Promise<void> {
+    const orders = await Order.findAll({
+      include: {
+        model: Payment,
+      },
+    });
+    if (orders.length > 0) {
+      res.status(200).json({
+        message: "Order fetched successfully",
+        data: orders,
+      });
+    } else {
+      res.status(400).json({
+        message: "You have no orders yet",
+        data: [],
+      });
+    }
+  }
 
   //Change Order status:
   async changeOrderStatus(req: Request, res: Response): Promise<void> {

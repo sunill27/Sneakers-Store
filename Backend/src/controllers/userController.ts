@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import User from "../database/models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { AuthRequest } from "../middleware/authMiddleware";
 
 class AuthController {
   public static async registerUser(req: Request, res: Response): Promise<void> {
@@ -66,6 +67,24 @@ class AuthController {
     } else {
       res.status(400).json({
         message: "Invalid email or password",
+      });
+    }
+  }
+
+  public static async fetchUsers(
+    req: AuthRequest,
+    res: Response
+  ): Promise<void> {
+    const users = await User.findAll();
+    if (users.length > 0) {
+      res.status(200).json({
+        message: "Users fetched successfully",
+        data: users,
+      });
+    } else {
+      res.status(400).json({
+        message: "No users yet",
+        data: [],
       });
     }
   }

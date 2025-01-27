@@ -33,7 +33,7 @@ const Navbar = () => {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center ml-10">
               <img
-                src="https://seeklogo.com/images/N/nike-jordan-air-shoe-logo-3F633DDA45-seeklogo.com.png"
+                src="https://images.seeklogo.com/logo-png/44/1/nike-jordan-air-shoe-logo-png_seeklogo-448320.png"
                 className="w-10 h-10"
               />
               <Link to="/">

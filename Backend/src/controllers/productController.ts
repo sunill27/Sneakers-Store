@@ -11,7 +11,7 @@ class ProductController {
     const { name, price, description, stock, categoryId } = req.body;
     let fileName;
     if (req.file) {
-      fileName = req.file.filename;
+      fileName = process.env.LINK + req.file?.filename;
     } else {
       fileName =
         "https://cdn.shopify.com/s/files/1/1626/5391/files/Dior_x_Air_Jordan_1_High.jpg?v=1698768560";
@@ -26,15 +26,17 @@ class ProductController {
 
     await Product.create({
       name,
-      price,
       description,
+      price,
       stock,
       imageUrl: fileName,
       userId: userId,
-      categoryId,
+      categoryId: categoryId,
     });
+    const data = await Product.findAll();
     res.status(200).json({
       message: "Product added successfully",
+      data: data,
     });
   }
 
@@ -54,7 +56,7 @@ class ProductController {
     });
     res.status(200).json({
       message: "Products fetched successfully",
-      data: data, 
+      data: data,
     });
   }
 

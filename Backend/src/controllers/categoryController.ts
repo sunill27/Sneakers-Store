@@ -37,8 +37,10 @@ class CategoryController {
     await Category.create({
       name,
     });
+    const data = await Category.findAll();
     res.status(200).json({
-      message: "Category added successfully",
+      message: "Categories added successfully",
+      data: data,
     });
   }
 

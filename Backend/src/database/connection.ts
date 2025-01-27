@@ -7,7 +7,6 @@
 // import Payment from "./models/paymentModel";
 // import OrderDetail from "./models/orderDetail";
 
-
 // const sequelize = new Sequelize({
 //   database: process.env.DB_NAME,
 //   dialect: "mysql",
@@ -67,7 +66,6 @@
 
 // export default sequelize;
 
-
 import { Sequelize } from "sequelize-typescript";
 import User from "./models/userModel";
 import Product from "./models/productModel";
@@ -82,7 +80,7 @@ const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   dialect: "mysql",
   username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD || '', // Handle empty password
+  password: process.env.DB_PASSWORD || "", // Handle empty password
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   models: [__dirname + "/models"], // Ensure models are correctly located

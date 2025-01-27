@@ -14,4 +14,11 @@ router
     authMiddleware.restrictTo(Role.ADMIN),
     errorHandler(AuthController.fetchUsers)
   );
+router
+  .route("/users/:id")
+  .delete(
+    authMiddleware.isAuthenticated,
+    authMiddleware.restrictTo(Role.ADMIN),
+    errorHandler(AuthController.deleteUsers)
+  );
 export default router;

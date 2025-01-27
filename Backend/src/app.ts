@@ -8,19 +8,20 @@ import "reflect-metadata";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-
 // CORS invoked:
-import cors from "cors"
+import cors from "cors";
 app.use(
   cors({
     origin: "*",
   })
-)
+);
 
 app.use(express.json());
 
+app.use(express.static("./src/uploads/"));
+
 // Import database connection and sync function
-import { syncDatabase } from "./database/connection";  // Updated import
+import { syncDatabase } from "./database/connection"; // Updated import
 
 // Import admin seeder
 import adminSeeder from "./adminSeeder";
@@ -39,7 +40,7 @@ import orderRoute from "./routes/orderRoute";
 const startServer = async () => {
   try {
     // Ensure the database is connected and synced before proceeding
-    await syncDatabase(); 
+    await syncDatabase();
 
     // Seed the admin user
     await adminSeeder();

@@ -11,7 +11,6 @@ const Navbar = () => {
   // console.log(user.token);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const { items } = useAppSelector((state) => state.carts);
-  // console.log(items);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -102,6 +101,12 @@ const Navbar = () => {
                           <sup>{items.length}</sup>
                         </span>
                       </Link> */}
+                      <Link
+                        to="/myorders"
+                        className="text-sm text-gray-900 font-semibold hover:text-blue-500"
+                      >
+                        <span>MyOrders</span>
+                      </Link>
                       <Link
                         to="/login"
                         className="text-sm text-gray-900 font-semibold hover:text-blue-500"

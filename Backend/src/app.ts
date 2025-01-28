@@ -35,6 +35,44 @@ import productRoute from "./routes/productRoute";
 import categoryRoute from "./routes/categoryRoute";
 import cartRoute from "./routes/cartRoute";
 import orderRoute from "./routes/orderRoute";
+import { Server } from "socket.io";
+import { createServer } from "http"; // Import 'createServer'
+import User from "./database/models/userModel";
+import jwt from "jsonwebtoken";
+import { promisify } from "util";
+
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+  },
+});
+
+let onlineUsers: any = [];
+const addOnlineUsers = (socketId: string, userId: string, role: string) => {
+  onlineUsers = onlineUsers.filter((user: any) => user.userId !== userId);
+  onlineUsers.push({ socketId, userId, role });
+};
+io.on("connection", async (socket) => {
+  console.log("A client connected");
+  const { token } = socket.handshake.auth;
+  if (token) {
+    //@ts-ignore
+    const decoded = await promisify(jwt.verify)(token, process.env.SECRET_KEY);
+    //@ts-ignore
+    const existingUsers = await User.findByPk(decoded.id);
+    if (existingUsers) {
+      addOnlineUsers(socket.id, existingUsers.id, existingUsers.role);
+    }
+  }
+  socket.on("updateOrderStatus", ({ status, orderId, userId }) => {
+    const findUser = onlineUsers.find((user: any) => user.userId == userId);
+    if (userId) {
+      io.to(findUser.socketId).emit("statusUpdated", { status, orderId });
+    }
+  });
+  console.log(onlineUsers);
+});
 
 // Function to start the server
 const startServer = async () => {
@@ -56,8 +94,8 @@ const startServer = async () => {
     app.use("/order", orderRoute);
 
     // Start the server
-    app.listen(PORT, () => {
-      console.log("Server started at port:", PORT);
+    server.listen(PORT, () => {
+      console.log(`Server started at port: ${PORT}`);
     });
   } catch (error) {
     console.error("Error starting server:", error);

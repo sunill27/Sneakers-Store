@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../globals/components/navbar/Navbar";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchMyOrders } from "../../store/checkoutSlice";
+import {
+  fetchMyOrders,
+  updateOrderStatusInStore,
+} from "../../store/checkoutSlice";
 import { Link } from "react-router-dom";
 import { OrderStatus } from "../../globals/components/types/checkoutTypes";
 import Footer from "../../globals/components/footer/Footer";
+import { socket } from "../../App";
 
 const MyOrders = () => {
   const dispatch = useAppDispatch();
@@ -12,8 +16,7 @@ const MyOrders = () => {
 
   useEffect(() => {
     dispatch(fetchMyOrders());
-    console.log(myOrders);
-  }, []);
+  }, [dispatch]);
 
   //SEARCHING:
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -26,6 +29,7 @@ const MyOrders = () => {
   const [selectedItem, setSelectedItem] = useState<OrderStatus>(
     OrderStatus.All
   );
+
   const filteredOrders = myOrders
     .filter(
       (order) =>
@@ -47,6 +51,12 @@ const MyOrders = () => {
         new Date(order.createdAt).toLocaleDateString() ===
           new Date(date).toLocaleDateString()
     );
+
+  useEffect(() => {
+    socket.on("statusUpdated", (data: any) => {
+      dispatch(updateOrderStatusInStore(data));
+    });
+  }, [socket]);
 
   return (
     <>

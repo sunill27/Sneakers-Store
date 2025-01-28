@@ -4,27 +4,6 @@ const Footer = () => {
   return (
     <>
       <footer className="flex flex-col items-center space-y-5 justify-center bg-gray-100 p- mt-5">
-        {/* <nav className="flex justify-center flex-wrap gap-6 text-gray-500 font-medium">
-          <a className="hover:text-gray-900" href="#">
-            Home
-          </a>
-          <a className="hover:text-gray-900" href="#">
-            About
-          </a>
-          <a className="hover:text-gray-900" href="#">
-            Services
-          </a>
-          <a className="hover:text-gray-900" href="#">
-            Media
-          </a>
-          <a className="hover:text-gray-900" href="#">
-            Gallery
-          </a>
-          <a className="hover:text-gray-900" href="#">
-            Contact
-          </a>
-        </nav> */}
-
         <div className="text-center py-3 px-10">
           <h2 className="text-2xl font-semibold text-gray-800 mb-1">
             Thanks for visiting us!
@@ -43,16 +22,7 @@ const Footer = () => {
               alt="Facebook"
             />
           </a>
-          <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="https://img.icons8.com/fluent/30/000000/linkedin-2.png"
-              alt="LinkedIn"
-            />
-          </a>
+
           <a
             href="https://instagram.com"
             target="_blank"

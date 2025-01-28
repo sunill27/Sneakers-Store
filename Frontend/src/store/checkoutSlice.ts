@@ -5,6 +5,7 @@ import {
   OrderDetails,
   OrderResponseData,
   OrderResponseItem,
+  OrderStatus,
 } from "../globals/components/types/checkoutTypes";
 import { AppDispatch } from "./store";
 import { APIAuthenticated } from "../http";
@@ -56,6 +57,22 @@ const orderSlice = createSlice({
     ) {
       state.khaltiUrl = action.payload;
     },
+    updateOrderStatus(
+      state: OrderResponseData,
+      action: PayloadAction<{ status: OrderStatus; orderId: string }>
+    ) {
+      const status = action.payload.status;
+      const orderId = action.payload.orderId;
+      const updatedOrder = state.myOrders.map((order) =>
+        order.id == orderId
+          ? {
+              ...order,
+              orderStatus: status,
+            }
+          : order
+      );
+      state.myOrders = updatedOrder;
+    },
   },
 });
 
@@ -65,6 +82,7 @@ export const {
   setMyOrders,
   setMyOrderDetails,
   setKhaltiUrl,
+  updateOrderStatus,
 } = orderSlice.actions;
 export default orderSlice.reducer;
 
@@ -141,5 +159,11 @@ export function cancelMyOrder(id: string) {
     } catch (error) {
       dispatch(setStatus(Status.ERROR));
     }
+  };
+}
+
+export function updateOrderStatusInStore(data: any) {
+  return function updateOrderStatusYhunk(dispatch: AppDispatch) {
+    dispatch(updateOrderStatus(data));
   };
 }

@@ -14,8 +14,7 @@ const Card: React.FC<CardProps> = ({ data }) => {
           <img
             className="w-full h-full object-center object-cover"
             src={data?.imageUrl}
-            // src="https://cdn.shopify.com/s/files/1/1626/5391/files/Dior_x_Air_Jordan_1_High.jpg?v=1698768560"
-            alt="AirJordan 1"
+            alt="Image"
           />
           <div className="space-x-1 flex justify-center mt-2"></div>
           <h1 className="text-xl sm:text-3xl md:text-3xl lg:text-3xl xl:text-4xl mb-2">

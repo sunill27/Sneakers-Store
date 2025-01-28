@@ -102,7 +102,7 @@ const Navbar = () => {
                         </span>
                       </Link> */}
                       <Link
-                        to="/myorders"
+                        to="/myorder"
                         className="text-sm text-gray-900 font-semibold hover:text-blue-500"
                       >
                         <span>MyOrders</span>

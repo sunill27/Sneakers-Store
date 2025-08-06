@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import Navbar from "../../globals/components/navbar/Navbar";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { useParams } from "react-router-dom";
-import { fetchByProductId } from "../../store/productSlice";
+import { Link, useParams } from "react-router-dom";
+import { fetchByProductId, fetchProducts } from "../../store/productSlice";
 import { addToCart } from "../../store/cartSlice";
 import Footer from "../../globals/components/footer/Footer";
 
@@ -10,11 +10,15 @@ const SingleProduct = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const { singleProduct } = useAppSelector((state) => state.products);
+  const { product } = useAppSelector((state) => state.products);
+  const relatedProducts = product.filter((p: any) => p.id !== id).slice(0, 8);
+
   useEffect(() => {
     if (id) {
       dispatch(fetchByProductId(id));
     }
-  }, []);
+    dispatch(fetchProducts());
+  }, [id, dispatch]);
 
   const handleAddToCart = () => {
     if (id && singleProduct) {
@@ -63,7 +67,8 @@ const SingleProduct = () => {
                     Price:
                   </span>
                   <span className="text-gray-600 dark:text-gray-300">
-                    {singleProduct?.price}{" "}
+                    {" "}
+                    {singleProduct?.price}
                   </span>
                 </div>
                 <div>
@@ -71,9 +76,20 @@ const SingleProduct = () => {
                     Available Stock:
                   </span>
                   <span className="text-gray-600 dark:text-gray-300">
-                    {singleProduct?.stock}{" "}
+                    {" "}
+                    {singleProduct?.stock}
                   </span>
                 </div>
+              </div>
+
+              <div className="mb-4">
+                <span className="font-bold text-gray-700 dark:text-gray-300">
+                  Category:
+                </span>
+                <span className="text-gray-600 dark:text-gray-300">
+                  {" "}
+                  {singleProduct?.Category.name}
+                </span>
               </div>
               <div className="mb-4">
                 <span className="font-bold text-gray-700 dark:text-gray-300">
@@ -118,6 +134,52 @@ const SingleProduct = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Section Divider */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <hr className="border-gray-300 dark:border-gray-600 mb-8" />
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+          You may also like
+        </h2>
+
+        {/* Related Products Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {relatedProducts.map((product) => (
+            <div
+              key={product.id}
+              className="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+            >
+              <Link to={`/product/${product?.id}`}>
+                <img
+                  src={product?.imageUrl}
+                  alt={product.name}
+                  className="h-48 w-full object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white truncate">
+                    {product?.name}
+                  </h3>
+                  <p className="text-pink-600 font-bold mt-2">
+                    Rs. {product?.price}
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mt-2">
+                    {singleProduct?.description}
+                  </p>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      dispatch(addToCart(product.id));
+                    }}
+                    className="mt-3 w-full bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded-full text-sm"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import Navbar from "../../globals/components/navbar/Navbar";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
@@ -9,6 +9,8 @@ import {
 import { orderItem, Status } from "../../store/checkoutSlice";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../globals/components/footer/Footer";
+import { clearCart } from "../../store/cartSlice";
+import { resetOrderStatus } from "../../store/orderSlice";
 
 const Checkout = () => {
   const { items } = useAppSelector((state) => state.carts);
@@ -51,8 +53,18 @@ const Checkout = () => {
     (total, item) => item.Product.price * item.quantity + total,
     0
   );
+
+  useEffect(() => {
+    dispatch(resetOrderStatus());
+  }, [dispatch]);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (items.length === 0) {
+      alert("Your cart is empty! Please add items before placing an order.");
+      return;
+    }
+
     const itemDetails: ItemDetails[] = items.map((item) => {
       return {
         productId: item.Product.id,
@@ -70,25 +82,31 @@ const Checkout = () => {
       window.location.href = khaltiUrl;
     }
   };
-  console.log(data);
+
+  const prevStatusRef = useRef<Status | null>(null);
 
   useEffect(() => {
+    console.log("Status changed:", status, "Previous:", prevStatusRef.current);
     if (khaltiUrl) {
       window.location.href = khaltiUrl;
       return;
     }
-    if (status === Status.SUCCESS) {
-      alert("Order Placed successfully");
+
+    // Only trigger alert if status changed from NOT SUCCESS to SUCCESS
+    if (status === Status.SUCCESS && prevStatusRef.current !== Status.SUCCESS) {
+      alert("Order placed successfully");
+      dispatch(clearCart());
+      dispatch(resetOrderStatus());
       navigate("/");
     }
-  }, [status, khaltiUrl]);
+
+    prevStatusRef.current = status;
+  }, [status, khaltiUrl, dispatch, navigate]);
 
   return (
     <>
       <Navbar />
-      {/* <div className="flex flex-col items-center border-b bg-gray-100 mt-[-100px] py-4 sm:flex-row sm:px-10 lg:px-20 xl:px-32">
-        <div className="py-7 text-xs sm:mt-0 sm:ml-auto sm:text-base"></div>
-      </div> */}
+
       <div className="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
         <div className="px-4 pt-8">
           <p className="text-xl font-medium">Order Summary</p>
@@ -140,11 +158,6 @@ const Checkout = () => {
                 className="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4"
                 htmlFor="radio_1"
               >
-                {/* <img
-                  className="w-14 object-contain"
-                  src="/images/naorrAeygcJzX0SyNI4Y0.png"
-                  alt=""
-                /> */}
                 <div className="ml-5">
                   <span className="mt-2 font-semibold">
                     Cash On Delivery(COD)
@@ -166,11 +179,6 @@ const Checkout = () => {
                 className="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4"
                 htmlFor="radio_2"
               >
-                {/* <img
-                  className="w-14 object-contain"
-                  src="/images/oG8xsl3xsOkwkMsrLGKM4.png"
-                  alt=""
-                /> */}
                 <div className="ml-5">
                   <span className="mt-2 font-semibold">Online(Khalti)</span>
                 </div>
@@ -179,7 +187,7 @@ const Checkout = () => {
           </form>
         </div>
         <form noValidate onSubmit={handleSubmit}>
-          <div className="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
+          <div className="mt-10 bg-gray-50 px-4 pt-8 lg:mt-4">
             <p className="text-xl font-medium">Payment Details</p>
             <p className="text-gray-400">
               Complete your order by providing your payment details.
@@ -221,8 +229,8 @@ const Checkout = () => {
                   <div className="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
                     <img
                       className="h-4 w-4 object-contain"
-                      src="https://flagpack.xyz/_nuxt/4c829b6c0131de7162790d2f897a90fd.svg"
-                      alt="image"
+                      src="../src/assets/nepalFlag.svg"
+                      alt="NepalFlag"
                     />
                   </div>
                 </div>
@@ -231,17 +239,17 @@ const Checkout = () => {
               <div className="mt-6 border-t border-b py-2">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-gray-900">Subtotal</p>
-                  <p className="font-semibold text-gray-900">Rs {subTotal}</p>
+                  <p className="font-semibold text-gray-900">Rs.{subTotal}</p>
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-gray-900">Shipping</p>
-                  <p className="font-semibold text-gray-900">Rs 100</p>
+                  <p className="font-semibold text-gray-900">Rs.100</p>
                 </div>
               </div>
               <div className="mt-6 flex items-center justify-between">
                 <p className="text-sm font-medium text-gray-900">Total</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  Rs{subTotal + 100}
+                  Rs.{subTotal + 100}
                 </p>
               </div>
             </div>

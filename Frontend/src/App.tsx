@@ -12,7 +12,7 @@ import MyOrders from "./pages/orders/MyOrders";
 import MyOrdersDetails from "./pages/orders/MyOrdersDetails";
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:4000", {
+export const socket = io("http://localhost:3000", {
   auth: {
     token: localStorage.getItem("token"),
   },

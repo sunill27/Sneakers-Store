@@ -40,8 +40,15 @@ export function fetchProducts() {
       const response = await API.get("/admin/product");
       if (response.status === 200) {
         const { data } = response.data;
+
+        // Sort products by createdAt date (oldest first)
+        const sortedProducts = [...data].sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+
         dispatch(setStatus(Status.SUCCESS));
-        dispatch(setProduct(data));
+        dispatch(setProduct(sortedProducts));
       } else {
         dispatch(setStatus(Status.ERROR));
       }
@@ -50,7 +57,6 @@ export function fetchProducts() {
     }
   };
 }
-
 //Fetch single product:
 //Check if data is in state or not, if data is in state it doesn't hit API otherwise it hits API.
 export function fetchByProductId(productId: string) {

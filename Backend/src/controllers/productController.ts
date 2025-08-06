@@ -11,7 +11,7 @@ class ProductController {
     const { name, price, description, stock, categoryId } = req.body;
     let fileName;
     if (req.file) {
-      fileName = process.env.LINK + req.file?.filename;
+      fileName = `${process.env.LINK}/${req.file?.filename}`;
     } else {
       fileName =
         "https://cdn.shopify.com/s/files/1/1626/5391/files/Dior_x_Air_Jordan_1_High.jpg?v=1698768560";

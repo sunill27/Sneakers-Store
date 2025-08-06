@@ -1,28 +1,51 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../globals/components/footer/Footer";
 import Navbar from "../../globals/components/navbar/Navbar";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { deleteCartItem, updateCartItem } from "../../store/cartSlice";
+import { resetOrderStatus } from "../../store/orderSlice";
+import { useEffect } from "react";
 
 const Cart = () => {
   const { items } = useAppSelector((state) => state.carts);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const handleDelete = (productId: string) => {
     dispatch(deleteCartItem(productId));
   };
 
   const handleUpdate = (productId: string, quantity: number) => {
-    dispatch(updateCartItem(productId, quantity));
+    if (quantity <= 0) {
+      handleDelete(productId);
+    } else {
+      dispatch(updateCartItem(productId, quantity));
+    }
   };
 
   const totalItemInCarts = items.reduce(
-    (total, item) => item?.quantity + total,
+    (total, item) => (item?.quantity ?? 0) + total,
     0
   );
   const totalPriceInCarts = items.reduce(
-    (total, item) => item?.Product?.price * item?.quantity + total,
+    (total, item) =>
+      (item?.Product?.price ?? 0) * (item?.quantity ?? 0) + total,
     0
   );
+
+  const handleCheckout = () => {
+    if (items.length === 0) {
+      alert("Your cart is empty! Please add items before checking out.");
+      return;
+    }
+    dispatch(resetOrderStatus()); // Reset previous order status before navigating
+    navigate("/checkout");
+  };
+
+  // Reset order status when Cart component loads
+  useEffect(() => {
+    dispatch(resetOrderStatus());
+  }, [dispatch]);
 
   return (
     <>
@@ -33,39 +56,46 @@ const Cart = () => {
             <div className="flex justify-between border-b pb-8">
               <h1 className="font-semibold text-2xl">Shopping Cart</h1>
               <h2 className="font-semibold text-2xl">
-                Products:{items.length} items
+                Products: {items.length} items
               </h2>
             </div>
 
             {items.length > 0 &&
               items.map((item) => {
+                const product = item?.Product ?? {};
+                const productId = product?.id ?? "";
+                const productImage = product?.imageUrl ?? "";
+                const productName = product?.name ?? "Unknown Product";
+                const productCategory =
+                  product?.Category?.name ?? "Unknown Category";
+                const productPrice = product?.price ?? 0;
+                const productDescription =
+                  product?.description ?? "No description available";
+
                 return (
                   <div
-                    key={item?.Product?.id}
+                    key={productId}
                     className="md:flex items-stretch py-8 border-t border-gray-50"
                   >
                     <div className="md:w-4/12 2xl:w-1/4 w-full">
                       <img
-                        src={item?.Product?.imageUrl}
-                        alt="Product Image"
+                        src={productImage}
+                        alt={productName}
                         className="w-full h-full object-center object-cover"
                       />
                     </div>
                     <div className="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
                       <p className="text-base font-black leading-none text-gray-800 mt-4">
-                        {item?.Product?.name}
+                        {productName}
                       </p>
                       <div className="flex items-center justify-between w-full">
                         <p className="text-xs leading-3 font-bold text-gray-800 md:pt-0 pt-2">
-                          Category: {item?.Product?.Category?.name}
+                          Category: {productCategory}
                         </p>
                         <div className="flex items-center">
                           <button
                             onClick={() =>
-                              handleUpdate(
-                                item?.Product?.id,
-                                item?.quantity - 1
-                              )
+                              handleUpdate(productId, item?.quantity - 1)
                             }
                             className="border rounded-md py-2 px-4 mr-2"
                           >
@@ -76,10 +106,7 @@ const Cart = () => {
                           </span>
                           <button
                             onClick={() =>
-                              handleUpdate(
-                                item?.Product?.id,
-                                item?.quantity + 1
-                              )
+                              handleUpdate(productId, item?.quantity + 1)
                             }
                             className="border rounded-md py-2 px-4 ml-2"
                           >
@@ -88,7 +115,7 @@ const Cart = () => {
                         </div>
                       </div>
                       <p className="text-xs leading-3 font-semibold text-gray-600 pt-2">
-                        {item?.Product?.description}
+                        {productDescription}
                       </p>
                       <p className="text-xs leading-3 text-gray-600 font-semibold py-4">
                         Color: Black
@@ -99,16 +126,14 @@ const Cart = () => {
                       <div className="flex items-center justify-between pt-5">
                         <div className="flex items-center">
                           <button
-                            onClick={() => {
-                              handleDelete(item?.Product?.id);
-                            }}
+                            onClick={() => handleDelete(productId)}
                             className="p-2 px-6 ml-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                           >
                             Remove
                           </button>
                         </div>
                         <p className="text-base font-black leading-none text-gray-800">
-                          Rs. {item?.Product?.price}
+                          Rs. {productPrice.toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -144,43 +169,28 @@ const Cart = () => {
               <span className="font-semibold uppercase text-sm">
                 Sub Total:
               </span>
-              <span> {totalPriceInCarts}</span>
+              <span> Rs. {totalPriceInCarts.toFixed(2)}</span>
             </div>
             <div className="flex justify-between mt-5 mb-5">
               <span className="font-semibold uppercase text-sm">
                 Shipping Cost :
               </span>
-              <span> {100}</span>
+              <span>Rs. 100.00</span>
             </div>
-
-            {/* <div className="py-10">
-              <label
-                htmlFor="promo"
-                className="font-semibold inline-block mb-3 text-sm uppercase"
-              >
-                Promo Code
-              </label>
-              <input
-                type="text"
-                id="promo"
-                placeholder="Enter your code"
-                className="p-2 text-sm w-full"
-              />
-            </div>
-            <button className="bg-red-500 hover:bg-red-600 px-5 py-2 text-sm text-white uppercase w-full">
-              Apply
-            </button> */}
             <div className="border-t mt-8">
               <div className="flex font-semibold justify-between py-6 text-sm uppercase">
                 <span>Total Price:</span>
-                <span> {totalPriceInCarts + 100}</span>
+                <span>Rs. {(totalPriceInCarts + 100).toFixed(2)}</span>
               </div>
-
-              <Link to="/checkout">
-                <button className="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">
-                  CheckOut
-                </button>
-              </Link>
+              <button
+                onClick={handleCheckout}
+                className={`bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full ${
+                  items.length === 0 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={items.length === 0}
+              >
+                CheckOut
+              </button>
             </div>
           </div>
         </div>
